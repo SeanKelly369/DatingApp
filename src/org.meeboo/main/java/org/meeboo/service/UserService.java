@@ -83,6 +83,7 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
+
     // Register User
     public UserEntity register(String firstName, String lastName, String username, String email)
             throws UsernameNotFoundException, UsernameExistException, EmailExistException, MessagingException, UserNotFoundException, javax.mail.MessagingException {

@@ -75,7 +75,6 @@ public class UserService {
         return RandomStringUtils.randomAlphanumeric(10);
     }
 
-
     private Long generateUserId() {
         return Long.valueOf(RandomStringUtils.randomNumeric(10));
     }

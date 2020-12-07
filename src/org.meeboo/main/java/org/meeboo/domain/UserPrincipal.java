@@ -12,7 +12,7 @@ import static com.google.common.collect.Streams.stream;
 
 public class UserPrincipal implements UserDetails {
 
-    private UserEntity user;
+    private final transient UserEntity user;
 
     public UserPrincipal(UserEntity user) {
         this.user = user;

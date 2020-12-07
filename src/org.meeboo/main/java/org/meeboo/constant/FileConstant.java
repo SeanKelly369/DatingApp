@@ -1,6 +1,11 @@
 package org.meeboo.constant;
 
 public class FileConstant {
+
+    FileConstant() {
+
+    }
+
     public static final String USER_IMAGE_PATH = "/user/image/";
     public static final String JPG_EXTENSION = "jpg";
     public static final String USER_FOLDER = System.getProperty("user.home") + "/supportportal/user/";

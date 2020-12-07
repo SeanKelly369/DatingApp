@@ -1,6 +1,10 @@
 package org.meeboo.constant;
 
 public class EmailConstant {
+
+    private EmailConstant() {
+
+    }
     public static final String SIMPLE_MAIL_TRANSFER_PROTOCOL = "smtps";
     public static final String USERNAME = "support@meeboo.org";
     public static final String PASSWORD = "2jxH#ddoOZ,*";

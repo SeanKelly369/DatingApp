@@ -1,6 +1,6 @@
-package dal;
+package org.meeboo.dal;
 
-import entity.User;
+import org.meeboo.entity.User;
 
 import java.util.List;
 

@@ -3,6 +3,10 @@ package org.meeboo.constant;
 import java.util.List;
 
 public class Authority {
+
+    private Authority() {
+
+    }
     public static final List<String> USER_AUTHORITIES =  List.of("user:read");
 
     public static final List<String> HR_AUTHORITIES = List.of("user:read", "user:update");

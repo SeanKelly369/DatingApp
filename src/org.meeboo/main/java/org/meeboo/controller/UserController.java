@@ -110,7 +110,7 @@ public class UserController {
         Calendar date = Calendar.getInstance();
         long timeInMillis = date.getTimeInMillis();
         boolean isExpired = (registerDate + TEN_MINUTES_IN_MILLIS) < timeInMillis;
-        return token == confirmationToken && !isExpired;
+        return token.equals(confirmationToken) && !isExpired;
     }
 }
 

@@ -66,8 +66,7 @@ public class UserService {
             user.setLastLoginDateDisplay(user.getLastLoginDate());
             user.setLastLoginDate(new Date());
             userRepository.save(user);
-            org.meeboo.domain.UserPrincipal userPrincipal = new UserPrincipal(user);
-            return userPrincipal;
+            return new UserPrincipal(user);
         }
     }
 
@@ -86,7 +85,7 @@ public class UserService {
 
     // Register User
     public UserEntity register(String firstName, String lastName, String username, String email)
-            throws UsernameNotFoundException, UsernameExistException, EmailExistException, MessagingException, UserNotFoundException, javax.mail.MessagingException {
+            throws UsernameNotFoundException, UsernameExistException, EmailExistException, UserNotFoundException, javax.mail.MessagingException {
         validateNewUsernameAndEmail(EMPTY, username, email);
         var userEntity = new UserEntity();
         var password = generatePassword();

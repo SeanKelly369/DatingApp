@@ -1,4 +1,4 @@
-package util;
+package org.meeboo.util;
 
 public class Constants {
 

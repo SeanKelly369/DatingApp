@@ -1,4 +1,4 @@
-package entity;
+package org.meeboo.entity;
 
 
 import lombok.Data;

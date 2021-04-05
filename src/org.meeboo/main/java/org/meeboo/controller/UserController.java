@@ -3,6 +3,7 @@ package org.meeboo.controller;
 import org.meeboo.domain.UserPrincipal;
 import org.meeboo.entity.UserEntity;
 import org.meeboo.exception.*;
+import org.meeboo.model.UpdateUserModel;
 import org.meeboo.service.UserService;
 import org.meeboo.utility.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,9 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    UpdateUserModel updateUserModel;
+
     private AuthenticationManager authenticationManager;
 
     private JwtTokenProvider jwtTokenProvider;
@@ -48,9 +52,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserEntity> register(@RequestBody UserEntity userEntity) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException, javax.mail.MessagingException {
+    public ResponseEntity<UserEntity> register(@RequestBody UserEntity userEntity) throws UserNotFoundException, UsernameExistException, EmailExistException, MessagingException, javax.mail.MessagingException, UserIdNotFoundException {
         UserEntity newUser = userService.register(userEntity.getFirstName(), userEntity.getLastName(), userEntity.getUsername(), userEntity.getEmail());
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
     @PostMapping("/add")
@@ -60,12 +64,23 @@ public class UserController {
                                                  @RequestParam("email") String email,
                                                  @RequestParam("country") String country,
                                                  @RequestParam("role") String role,
-                                                 @RequestParam("isActive") String isActive,
-                                                 @RequestParam("isNonLocked") String isNonLocked,
+                                                 @RequestParam("isActive") boolean isActive,
+                                                 @RequestParam("isNonLocked") boolean isNonLocked,
                                                  @RequestParam(value = "profileImage", required = false)MultipartFile profileImage)
         throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
-        UserEntity newUser = userService.addNewUser(firstName, lastName, username, email, country, role, Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive), profileImage);
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+
+        updateUserModel.setNewFirstname(firstName);
+        updateUserModel.setNewLastname(lastName);
+        updateUserModel.setNewUsername(username);
+        updateUserModel.setNewEmail(email);
+        updateUserModel.setCountry(country);
+        updateUserModel.setRole(role);
+        updateUserModel.setActive(isActive);
+        updateUserModel.setNonLocked(isNonLocked);
+        updateUserModel.setProfileImage(profileImage);
+
+        UserEntity newUser = userService.addNewUser(updateUserModel);
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
     @PostMapping("/update")
@@ -76,11 +91,23 @@ public class UserController {
                                              @RequestParam("email") String email,
                                              @RequestParam("country") String country,
                                              @RequestParam("role") String role,
-                                             @RequestParam("isActive") String isActive,
-                                             @RequestParam("isNonLocked") String isNonLocked,
+                                             @RequestParam("isActive") boolean isActive,
+                                             @RequestParam("isNonLocked") boolean isNonLocked,
                                              @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws
             UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
-        UserEntity updateUser = userService.updateUser(currentUsername, firstName, lastName, username, email, country, role, Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive), profileImage);
+        UpdateUserModel updateUserModel = new UpdateUserModel();
+        updateUserModel.setCurrentUsername(currentUsername);
+        updateUserModel.setNewFirstname(firstName);
+        updateUserModel.setNewLastname(lastName);
+        updateUserModel.setNewUsername(username);
+        updateUserModel.setNewEmail(email);
+        updateUserModel.setCountry(country);
+        updateUserModel.setRole(role);
+        updateUserModel.setActive(isActive);
+        updateUserModel.setNonLocked(isNonLocked);
+        updateUserModel.setProfileImage(profileImage);
+
+        UserEntity updateUser = userService.updateUser(updateUserModel);
         return new ResponseEntity<>(updateUser, HttpStatus.OK);
     }
 

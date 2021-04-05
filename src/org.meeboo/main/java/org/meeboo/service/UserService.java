@@ -4,6 +4,7 @@ import org.meeboo.domain.UserPrincipal;
 import org.meeboo.entity.UserEntity;
 import org.meeboo.enumeration.Role;
 import org.meeboo.exception.*;
+import org.meeboo.model.UpdateUserModel;
 import org.meeboo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -11,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +49,9 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    UpdateUserModel updateUserModel;
+
     public static String confirmationToken = "";
     public static long registerDate;
 
@@ -85,7 +88,7 @@ public class UserService {
 
     // Register User
     public UserEntity register(String firstName, String lastName, String username, String email)
-            throws UsernameNotFoundException, UsernameExistException, EmailExistException, UserNotFoundException, javax.mail.MessagingException {
+            throws UserIdNotFoundException, UsernameExistException, EmailExistException, UserNotFoundException, javax.mail.MessagingException {
         validateNewUsernameAndEmail(EMPTY, username, email);
         var userEntity = new UserEntity();
         var password = generatePassword();
@@ -119,17 +122,12 @@ public class UserService {
     }
 
     private String encodePassword(String password) {
-        var encodedPassword = passwordEncoder.encode(password);
-        return encodedPassword;
+        return passwordEncoder.encode(password);
     }
 
     private void validationLoginAttempt(UserEntity user) {
         if (user.isNotLocked()) {
-            if (loginAttemptService.hasExceededMaxAttempts(user.getUsername())) {
-                user.setNotLocked(false);
-            } else {
-                user.setNotLocked(true);
-            }
+            user.setNotLocked(!loginAttemptService.hasExceededMaxAttempts(user.getUsername()));
         } else {
             loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());
         }
@@ -170,25 +168,26 @@ public class UserService {
     }
 
     // Add User
-    public UserEntity addNewUser(String firstName, String lastName, String username, String email, String country, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
-        validateNewUsernameAndEmail(EMPTY, username, email);
+    public UserEntity addNewUser(UpdateUserModel updateUserModel)
+            throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
+        validateNewUsernameAndEmail(EMPTY, updateUserModel.getNewUsername(), updateUserModel.getNewEmail() );
         var userEntity = new UserEntity();
         var password = generatePassword();
         userEntity.setUserId(generateUserId());
-        userEntity.setFirstName(firstName);
-        userEntity.setLastName(lastName);
+        userEntity.setFirstName(updateUserModel.getNewFirstname() );
+        userEntity.setLastName(updateUserModel.getNewLastname() );
         userEntity.setJoinDate(new Date());
-        userEntity.setUsername(username);
-        userEntity.setEmail(email);
-        userEntity.setCountry(country);
+        userEntity.setUsername(updateUserModel.getNewUsername() );
+        userEntity.setEmail(updateUserModel.getNewEmail() );
+        userEntity.setCountry(updateUserModel.getCountry() );
         userEntity.setPassword(encodePassword(password));
-        userEntity.setActive(isActive);
-        userEntity.setNotLocked(isNonLocked);
-        userEntity.setRole(getRoleEnumName(role).name());
-        userEntity.setAuthorities(getRoleEnumName(role).getAuthorities());
-        userEntity.setProfileImageUrl(getTemporaryProfileImageUrl(username));
+        userEntity.setActive(updateUserModel.isActive() );
+        userEntity.setNotLocked(updateUserModel.isNonLocked() );
+        userEntity.setRole(getRoleEnumName(updateUserModel.getRole() ).name());
+        userEntity.setAuthorities(getRoleEnumName(updateUserModel.getRole() ).getAuthorities());
+        userEntity.setProfileImageUrl(getTemporaryProfileImageUrl(updateUserModel.getNewUsername() ));
         userRepository.save(userEntity);
-        saveProfileImage(userEntity, profileImage);
+        saveProfileImage(userEntity, updateUserModel.getProfileImage() );
         log.info("New user password: {}", password);
         return userEntity;
     }
@@ -222,20 +221,25 @@ public class UserService {
 
 
     // Update user
-    public UserEntity updateUser(String currentUsername, String newFirstname, String newLastname, String newUsername, String newEmail, String country, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws
-            UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
-        UserEntity currentUser = validateNewUsernameAndEmail(currentUsername, newUsername, newEmail);
-        currentUser.setFirstName(newFirstname);
-        currentUser.setLastName(newLastname);
-        currentUser.setUsername(newUsername);
-        currentUser.setEmail(newEmail);
-        currentUser.setCountry(country);
-        currentUser.setRole(getRoleEnumName(role).name());
-        currentUser.setNotLocked(isNonLocked);
-        currentUser.setActive(isActive);
-        currentUser.setAuthorities(getRoleEnumName(role).getAuthorities());
-        userRepository.save(currentUser);
-        saveProfileImage(currentUser, profileImage);
+    public UserEntity updateUser(UpdateUserModel updateUserModel) throws
+            UserNotFoundException, UsernameExistException, EmailExistException, IOException,
+            NotAnImageFileException {
+        UserEntity currentUser = null;
+        currentUser = validateNewUsernameAndEmail(updateUserModel.getCurrentUsername(),
+                updateUserModel.getNewUsername(), updateUserModel.getNewEmail() );
+        if(currentUser != null) {
+            currentUser.setFirstName(updateUserModel.getNewFirstname() );
+            currentUser.setLastName(updateUserModel.getNewLastname() );
+            currentUser.setUsername(updateUserModel.getNewUsername() );
+            currentUser.setEmail(updateUserModel.getNewEmail() );
+            currentUser.setCountry(updateUserModel.getCountry() );
+            currentUser.setRole(getRoleEnumName(updateUserModel.getRole() ).name());
+            currentUser.setNotLocked(updateUserModel.isNonLocked() );
+            currentUser.setActive(updateUserModel.isActive() );
+            currentUser.setAuthorities(getRoleEnumName(updateUserModel.getRole()).getAuthorities());
+            userRepository.save(currentUser);
+        }
+        saveProfileImage(currentUser, updateUserModel.getProfileImage());
         return currentUser;
     }
 }

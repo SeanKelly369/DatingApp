@@ -37,7 +37,7 @@ public class EmailService {
         String htmlText =
                 "<h1>Hello World</h1>" +
                 "<span>To confirm your account, please click here : </span> <br>" +
-                "<span>http://localhost:8080/api/confirm-account?token=" + confirmationToken + "</span>";
+                "<span>http://localhost:8082/api/confirm-account?token=" + confirmationToken + "</span>";
 
         message.setContent(htmlText, "text/html");
 

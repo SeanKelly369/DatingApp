@@ -1,9 +1,13 @@
 package org.meeboo.controller;
 
+import org.bson.types.Binary;
 import org.meeboo.domain.UserPrincipal;
+import org.meeboo.entity.PhotoCountEntity;
 import org.meeboo.entity.UserEntity;
 import org.meeboo.exception.*;
 import org.meeboo.model.UpdateUserModel;
+import org.meeboo.model.UserPhoto;
+import org.meeboo.service.PhotoCountService;
 import org.meeboo.service.UserService;
 import org.meeboo.utility.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -15,12 +19,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.meeboo.constant.SecurityConstant.JWT_TOKEN_HEADER;
 import static org.meeboo.service.UserService.confirmationToken;
@@ -33,6 +40,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    PhotoCountService photoCountService;
 
     @Autowired
     UpdateUserModel updateUserModel;
@@ -83,6 +93,31 @@ public class UserController {
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
+    @PostMapping("/addPhotos")
+    public String addPhoto(@RequestParam("title") String title,
+                           @RequestParam("image") MultipartFile image,
+                           Model model) throws IOException {
+        Optional<PhotoCountEntity> id = photoCountService.getPhotoCount();
+
+        UpdateUserModel updateUserModel = new UpdateUserModel();
+        Date date = new Date();
+        UserPhoto userPhoto = new UserPhoto();
+//        userPhoto.setPhotoId(id);
+//        userPhoto.setPhoto((Binary) image);
+//        updateUserModel.setPhotos(id, image);
+        return null;
+    }
+
+    @GetMapping("photosCount")
+    public String photoCount() {
+
+        int count = 0;
+
+        String value = String.valueOf(Integer.toHexString(count));
+
+        return value;
+    }
+
     @PostMapping("/update")
     public ResponseEntity<UserEntity> update(@RequestParam("currentUsername") String currentUsername,
                                              @RequestParam("firstName") String firstName,
@@ -93,7 +128,9 @@ public class UserController {
                                              @RequestParam("role") String role,
                                              @RequestParam("isActive") boolean isActive,
                                              @RequestParam("isNonLocked") boolean isNonLocked,
-                                             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws
+                                             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
+
+            throws
             UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
         UpdateUserModel updateUserModel = new UpdateUserModel();
         updateUserModel.setCurrentUsername(currentUsername);

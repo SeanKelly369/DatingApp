@@ -21,6 +21,5 @@ public class User {
     private String password;
     private Date creationDate = new Date();
     private Map<String, String> userSettings = new HashMap<>();
-    private List<Binary> images;
 
 }

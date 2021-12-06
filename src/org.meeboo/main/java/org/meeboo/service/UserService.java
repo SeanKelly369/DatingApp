@@ -1,10 +1,12 @@
 package org.meeboo.service;
 
 import org.meeboo.domain.UserPrincipal;
+import org.meeboo.entity.PhotoCountEntity;
 import org.meeboo.entity.UserEntity;
 import org.meeboo.enumeration.Role;
 import org.meeboo.exception.*;
 import org.meeboo.model.UpdateUserModel;
+import org.meeboo.repository.PhotoCountRepository;
 import org.meeboo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;

@@ -1,14 +1,11 @@
 package org.meeboo.entity;
 
-
 import lombok.Data;
-import org.bson.types.Binary;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Document(collection = "User")

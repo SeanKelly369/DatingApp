@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import static org.meeboo.constant.EmailConstant.*;
+
 import static javax.mail.Message.RecipientType.CC;
 
 @Service

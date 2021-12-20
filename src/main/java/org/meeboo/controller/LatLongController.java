@@ -1,9 +1,5 @@
 package org.meeboo.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.meeboo.component.HttpClientComponent;
 import org.meeboo.model.SunriseSunsetModel;

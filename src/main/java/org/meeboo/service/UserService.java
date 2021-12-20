@@ -1,13 +1,13 @@
 package org.meeboo.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.meeboo.domain.UserPrincipal;
 import org.meeboo.entity.UserEntity;
 import org.meeboo.enumeration.Role;
 import org.meeboo.exception.*;
 import org.meeboo.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +26,6 @@ import java.util.*;
 
 import static org.meeboo.constant.FileConstant.*;
 import static org.meeboo.constant.UserConstants.*;
-import static org.meeboo.enumeration.Role.ROLE_USER;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.springframework.http.MediaType.*;
@@ -98,8 +97,8 @@ public class UserService {
         userEntity.setPassword(encodePassword(password));
         userEntity.setActive(true);
         userEntity.setNotLocked(true);
-        userEntity.setRole(ROLE_USER.name());
-        userEntity.setAuthorities(ROLE_USER.getAuthorities());
+        userEntity.setRole(Role.ROLE_USER.name());
+        userEntity.setAuthorities(Role.ROLE_USER.getAuthorities());
         userEntity.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         userEntity.setConfirmed(false);
 
